@@ -9,7 +9,7 @@
 !!!!!!!!!!!!!!!!!!!!! genomic information !!!!!!!!!!!!!!!!!!!!!
 !!!! most of these inputs may no not need to be changed
 ! [int] number of chromosome
-4
+26
 
 ! [*] base-name for genepool with integer representation of
 ! genes the number of individuals must be greater than number 
@@ -51,10 +51,10 @@ freq.txt
 !!!!!!!!!!!!!!!!!!!!! genetic infomration !!!!!!!!!!!!!!!!!!!!!
 !!!! Information for genetic traits are input here 
 ! [int] number of components, i.e., traits
-2
+3
 
 ! (ncomp-1)*ncomp/2 x [real] corr. structure (ncomp = # of components)
-! if ncomp = 1, this input is not read and next input is expcted (leave blank)
+! if ncomp = 1, this input is not read and next input is expcted.
 ! for ncmop > 1 , (ncomp - 1)*ncomp/2 inputs need to be in the order 
 ! corr(2,1)
 ! corr(3,1)
@@ -65,14 +65,16 @@ freq.txt
 ! corr(ncomp,2)
 ! corr(4,3) 
 ! ... and so on
+! Note, that the distribution of TBV is not standardised
 0.10
-
+-0.5
+0.3
 
 !!!!!!!!!!!!!!!!!!!! population information !!!!!!!!!!!!!!!!!!!
-! [int] number of animals in each generation
-600
+! [int] number of animals in pedigree
+800
 
-! pedigree file (in the form id, father, mother)
+! pedigree file (in the form id, father, mother) (should not have header)
 ../data/pedigree.txt
 
 !!!!!!!!!!!!!!!!!!!!! output information !!!!!!!!!!!!!!!!!!!!!!
@@ -85,7 +87,7 @@ tbv.txt
 !!!!!!!!!!!!!!!!!!!!!! debugging files !!!!!!!!!!!!!!!!!!!!!!!!
 ! I included these files (specially QTL) for debugging puposes
 ! Save QTL in QTLlist.txt file? (1 = yes, default = no)
-0
+1
 ! Save SNP in SNPlist.txt file? (1 = yes, default = no)
 0
 

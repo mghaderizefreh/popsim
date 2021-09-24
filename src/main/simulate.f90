@@ -101,21 +101,33 @@ program simulate
      stop 3
   end if
   ! ----------------------------------------------
-  ! calculating the cumulative distribution for number of recombination events
+  ! initialising the genotypes (for founders)
   ! ----------------------------------------------
-  i = 200 ! upto 200 recombinations
-  if (verbose) write(STDOUT, 100) &
-       "Setting total number of mutations and recombinations"
-  call GetMutRecArray(verbose, i, chrL, mutationRate, nLoci, &
-       chiasmaCumP, chiasmacumP0, totalChiasma, maxchiasma, &
-       mutationCumP, mutationCumP0, totalMutation, maxmutations)
-  if (verbose) write(STDOUT, 100) "Mutation and recombinations set"
-
   i = 3 ! genstart = 3
   j = 1 ! istore = 1
   call InitialiseGenotypes(verbose, nchr, nAnim, i, nloci, nblock, j, &
        nfounders, genome1, maxloci, maxblock, ifail, chrL, trim(filename1),&
        trim(filename2))
+  ! ----------------------------------------------
+  ! calculating the cumulative distribution for number of recombination events
+  ! ----------------------------------------------
+  i = 200 ! upto 200 recombinations
+  if (verbose) write(STDOUT, 100) &
+       "Setting total number of mutations and recombinations"
+  ! This is needed to calculate "an average" number of mutations per chromosome
+  ! even though, the mutation is totally ignored here.
+  ! in a better scenario, one should calculate total number of mutations
+  ! independently
+  nloci = 0
+  do iChr = 1, nChr
+     nloci = nloci + genome1(iChr)%nLoci
+  end do
+  nLoci = nLoci / nChr
+  call GetMutRecArray(verbose, i, chrL, mutationRate, nLoci, &
+       chiasmaCumP, chiasmacumP0, totalChiasma, maxchiasma, &
+       mutationCumP, mutationCumP0, totalMutation, maxmutations)
+  if (verbose) write(STDOUT, 100) "recombinations set (mutations ignored)"
+
   ! now adding other animals
   i = 1 ! istore = 1
   k = 1 ! samepos = 1
@@ -128,9 +140,6 @@ program simulate
                 chiasmaCumP0, ChiasmaCumP, i, &
                 offGenInp = genome1(iChr)%genotypes,&
                 positions = genome1(iChr)%positions, samePos = k)
-           call sampleMutation(id, igam, genome1(iChr)%genotypes, &
-                genome1(iChr)%nLoci, maxMutations, mutationCumP0, &
-                mutationCumP, i)
         end do
      end do
   end do

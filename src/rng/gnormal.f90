@@ -102,29 +102,17 @@ end subroutine gnormal
 
 subroutine normdev(val)
 ! making a random varaible form standard normal
-! copy of ricardo's code (goto replaced by while)
-! Routine 'gasdev' ,Numerical Recipes, page 203
+! copy of Andrea's code (excluding sigma)
   use constants
   implicit none
-  save
-  real(KINDR)    ::val,v1,v2,fac, r = 2.
-  real(KINDR)    ::gset =0.0
-  integer ::iset =0
+  real(KINDR), intent(inout) :: val
+  real(KINDR) :: r, b, x, y
 
-  if (iset .eq. 0) then
-     do while(r.ge.1..or.r.eq.0.)
-        call random_number(v1)
-        call random_number(v2)
-        v1 = 2. * v1 - 1.
-        v2 = 2. * v2 - 1.
-        r = v1 ** 2 + v2 ** 2
-     end do
-     fac = sqrt(-2. * log(r) / r)
-     gset= v1 * fac
-     val = v2 * fac
-     iset= 1
-  else
-     val = gset
-     iset = 0
-  end if
+  call random_number(x)
+  call random_number(y)
+  
+  r = sqrt(-TWO * Log(x))
+  b = y * 6.2831853_KINDR
+  
+  val = r * cos(b)
 end subroutine normdev
