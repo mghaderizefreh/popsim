@@ -1,0 +1,9 @@
+lib/*
+build/*
+bin/*
+
+*.exe
+tests/*
+!tests/input
+data/*
+!data/pedigree.txt

@@ -1,0 +1,91 @@
+! This is a sample input file.
+! Lines that start with exclamation mark are skipped.
+! empty lines are also skipped.
+
+! [int] verbosity: '1' = produces lots of information,
+! else = quiet
+1
+
+!!!!!!!!!!!!!!!!!!!!! genomic information !!!!!!!!!!!!!!!!!!!!!
+!!!! most of these inputs may no not need to be changed
+! [int] number of chromosome
+4
+
+! [*] base-name for genepool with integer representation of
+! genes the number of individuals must be greater than number 
+! of animals the format should be <basename><xxx> with xxx
+! starting from 001 (limit of 100 characters; 
+../data/original.ch
+
+! [*] base-name for gene positions same format as above
+../data/SNPpositions.t
+
+! [real] length of chromosome (assuming all equal length)
+1.0
+
+! [real] mutation rate (scientic notations are accepted)
+1.e-6
+
+! [int] number of QTLs on each chromosome
+500
+
+! [int] number of SNPs on each chromosome (excluding QTL)
+1000
+
+! [int] randomQTL: 1 = QTLs will be selected randomly,
+! else = QTLs will be selected
+! from the alleses with MAF above a certain threshold
+1
+
+! [real] MAF for QTL selection. If randomQTL = True,
+! this will be ignored, otherwise
+! MAF must be in interval [0,0.5)
+0.05
+
+! [*] base-name for frequency files. If randomQTL = True this
+! will be ignored, otherwise
+! as many files are required as there are chromosomes
+freq.txt
+
+
+!!!!!!!!!!!!!!!!!!!!! genetic infomration !!!!!!!!!!!!!!!!!!!!!
+!!!! Information for genetic traits are input here 
+! [int] number of components, i.e., traits
+2
+
+! (ncomp-1)*ncomp/2 x [real] corr. structure (ncomp = # of components)
+! if ncomp = 1, this input is not read and next input is expcted (leave blank)
+! for ncmop > 1 , (ncomp - 1)*ncomp/2 inputs need to be in the order 
+! corr(2,1)
+! corr(3,1)
+! ...
+! corr(ncomp,1)
+! corr(3,2)
+! ...
+! corr(ncomp,2)
+! corr(4,3) 
+! ... and so on
+0.10
+
+
+!!!!!!!!!!!!!!!!!!!! population information !!!!!!!!!!!!!!!!!!!
+! [int] number of animals in each generation
+600
+
+! pedigree file (in the form id, father, mother)
+../data/pedigree.txt
+
+!!!!!!!!!!!!!!!!!!!!! output information !!!!!!!!!!!!!!!!!!!!!!
+! output filename for G matrix
+gmatrix.txt
+
+! output filename for TBV
+tbv.txt
+
+!!!!!!!!!!!!!!!!!!!!!! debugging files !!!!!!!!!!!!!!!!!!!!!!!!
+! I included these files (specially QTL) for debugging puposes
+! Save QTL in QTLlist.txt file? (1 = yes, default = no)
+0
+! Save SNP in SNPlist.txt file? (1 = yes, default = no)
+0
+
