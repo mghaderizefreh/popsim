@@ -23,5 +23,12 @@ To run the program use
 ``` shell
 echo <name_of_the_input_file> | <path_to_executable> > <path_to_screen_output>
 ```
-
-
+### Run with OMP
+The Gmatrix routine is written with OMP loop. If more than one core are available, you can specifiy the number of threads by
+``` shell
+OMP_NUM_THREADS=<NUMBERS> <path_to_exe> < <path_to_a_file_containing_path_to_input> > <path_to_screen_output>
+```
+Some of small arrays are stored in stack. However, if the number of animals in the pedigree is extremely high stack size must be increased, i.e, prepend the above line with
+```shell
+KMP_STACKSIZE=<SIZE_in_M_or_G>
+```
