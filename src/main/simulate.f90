@@ -155,10 +155,12 @@ program simulate
   if (verbose) write(STDOUT, 100) "QTL and SNP list simulated"
   ! saving QTL list (if instructed)
   if (saveQTL) then
+     write(formato, '(a1,i2,a17)') "(", ncomp-1, "(f15.7,1x),f15.7)"
+     if (verbose) write(STDOUT, *) "formato: ", trim(formato)
      open(1, file = "QTLlist.txt")
      do ichr = 1, nchr
         do i = 1, nQTL
-           write(1, *) QTLlist%values(ichr, i, 1:ncomp)
+           write(1, formato) QTLlist%values(ichr, i, 1:ncomp)
         end do
      end do
      close(1)
@@ -184,8 +186,10 @@ program simulate
   
   ! saving TBV (one of outputs)
   open(1,file = trim(tbvFile))
+  write(formato, '(a1,i2,a17)') "(", ncomp-1, "(f15.7,1x),f15.7)"
+  if (verbose) write(STDOUT, *) "formato: ", trim(formato)
   do i = 1, nanim
-     write(1, *) (tbv(i,j), j = 1, ncomp)
+     write(1, formato) (tbv(i,j), j = 1, ncomp)
   end do
   close(1)
 

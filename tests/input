@@ -7,7 +7,7 @@
 1
 
 !!!!!!!!!!!!!!!!!!!!! genomic information !!!!!!!!!!!!!!!!!!!!!
-!!!! most of these inputs may no not need to be changed
+!!!! most of the inputs in this part may no not need to be changed
 ! [int] number of chromosome
 26
 
@@ -49,29 +49,48 @@ freq.txt
 
 
 !!!!!!!!!!!!!!!!!!!!! genetic infomration !!!!!!!!!!!!!!!!!!!!!
-!!!! Information for genetic traits are input here 
-! [int] number of components, i.e., traits
-3
+!!!! Information for genetic traits are here 
+! [int] number of components, i.e., number of traits
+6
 
-! (ncomp-1)*ncomp/2 x [real] corr. structure (ncomp = # of components)
+! Correlation structure
+! (ncomp-1)*ncomp/2 x [real] (ncomp = # of components)
 ! if ncomp = 1, this input is not read and next input is expcted.
-! for ncmop > 1 , (ncomp - 1)*ncomp/2 inputs need to be in the order 
+! for ncmop > 1 , (ncomp - 1)*ncomp/2 inputs need to be in the order row-sie 
+! for the lower triangle (column-wise for the upper), e.g., 
 ! corr(2,1)
 ! corr(3,1)
+! corr(3,2)
+! corr(4,1)
+! corr(4,2)
+! corr(4,3)
+! ...
 ! ...
 ! corr(ncomp,1)
-! corr(3,2)
-! ...
 ! corr(ncomp,2)
-! corr(4,3) 
-! ... and so on
-! Note, that the distribution of TBV is not standardised
+! ...
+! corr(ncomp,ncomp-1)
+! NOTE, THAT THE DISTRIBUTION OF TBV IS NOT STANDARDISED
 0.10
--0.5
+0.5
 0.3
+0.2
+0.0
+0.1
+0.2
+0.3
+0.4
+0.0
+0.0
+0.0
+0.1
+0.2
+0.8
 
 !!!!!!!!!!!!!!!!!!!! population information !!!!!!!!!!!!!!!!!!!
 ! [int] number of animals in pedigree
+! NOTE THTAT IF THIS NUMBER IS SMALLER THAN THE ACTUAL NUMBER OF LINES IN THE 
+! PEDIGREE FILE, THE REST OF THE FILE IS SKIPPED.
 800
 
 ! pedigree file (in the form id, father, mother) (should not have header)
@@ -87,6 +106,7 @@ tbv.txt
 !!!!!!!!!!!!!!!!!!!!!! debugging files !!!!!!!!!!!!!!!!!!!!!!!!
 ! I included these files (specially QTL) for debugging puposes
 ! Save QTL in QTLlist.txt file? (1 = yes, default = no)
+! QTLs are standardised with the same correlation as expected for tbv
 1
 ! Save SNP in SNPlist.txt file? (1 = yes, default = no)
 0
