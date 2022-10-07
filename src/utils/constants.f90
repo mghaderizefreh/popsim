@@ -28,6 +28,13 @@ module constants
      real(KINDR), dimension(:,:,:), allocatable :: values ! nChr x nQTL x nComp
   end type QTL_Array
 
+  type variances
+   real(KINDR), allocatable, dimension(:) :: A ! genetic part
+   real(KINDR), allocatable, dimension(:) :: E ! environemntal part
+   real(KINDR), allocatable, dimension(:) :: PE ! permanent environment
+   real(KINDR), allocatable, dimension(:,:) :: corr ! (genetic) correlation
+   real(KINDR), allocatable, dimension(:,:) :: cov ! (genetic) covariance
+  end type variances
   !   Handles
   integer, parameter :: STDIN  = 5
   integer, parameter :: STDOUT = 6

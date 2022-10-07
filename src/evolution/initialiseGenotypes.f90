@@ -146,7 +146,7 @@ subroutine InitialiseGenotypes(verbose, nchr, nanim, genstart, nloci, nblock,&
         open(newunit = iun, file=filename, status = 'old')
         read(iun,*) i, nloci, nblock, k
 
-        if (i .lt. nanim) then
+        if (i .lt. nfounders) then
            ifail = 1
            write(STDERR,'(a, a)') &
                 "Error. Genotype file does not have enough individuals: ",&

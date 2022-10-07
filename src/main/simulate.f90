@@ -9,23 +9,25 @@ program simulate
   implicit none
 
   logical :: verbose
-  logical :: saveSNP, saveQTL
+  logical :: saveSNP, saveQTL, saveGenotypeBIN, saveGenotypeTXT, saveGRM
   integer :: nBasePop
   integer :: nanim, nloci, nblock, maxloci, maxblock, ifail, nChr
-  character(len=100) :: startFile, filename1, filename2, inputfile
-  character(len=100) :: baseNameFreq, gmatrixFile, pedigreeFile, TBVFile
+  character(len=100) :: startFile, filename1, filename2, inputfile, phenFile
+  character(len=100) :: baseNameFreq, gmatrixFile, pedigreeFile, TBVFile, genotypeFileBIN, genotypeFileTXT
   !integer :: iunlog, iunFarm, iuniter
   character(len=60) :: formato
   type(chromosome), dimension(:), allocatable, target :: genome1
   integer, dimension(:), allocatable :: seed
   real(KINDR) :: chrL
   integer, dimension(:), allocatable :: indiv!, male, female
-  !  logical, dimension(:), allocatable :: sex !true = male, false = female
-
+  type(variances) :: vars
+  real(KINDR), dimension(:), allocatable :: means, cv, h2, phen
+  real(KINDR) :: xmin, xmax, val1
+  integer :: nfarm
+  real(KINDR), dimension(:,:), allocatable :: locations
+  real(KINDR) :: farmRange
+  integer :: allocation, nlox
   real(KINDR), dimension(:,:), allocatable :: corrs
-
-!  integer, dimension(:,:,:), pointer :: parentGen, offGen
-
   logical :: randomQTL
   integer :: nfounders
   real(KINDR) :: maf
@@ -36,7 +38,7 @@ program simulate
   real(KINDR) :: mutationCumP0, chiasmaCumP0, mutationRate
   integer :: maxchiasma, maxmutations
   real(KINDR), allocatable, dimension(:) :: chiasmaCumP, mutationCumP
-  integer, allocatable, dimension(:) :: chr_nlocibefore
+  integer, allocatable, dimension(:) :: chr_nlocibefore, farmInd
   integer, allocatable, dimension(:) :: totalChiasma, totalMutation
   real(KINDR), allocatable, dimension(:,:) :: tbv
   real(KINDR), allocatable, dimension(:) :: Amat
@@ -45,11 +47,11 @@ program simulate
   ! counters
   integer :: i, j, k, iChr, id, igam, iparent
   character(len=30) :: status, estatus
-
+  external :: setUserParameters, simulatePhenotype
   ! ==============================================
   ! initialising seed
   ! ==============================================
-  startfile = "inicio.dat"
+  startfile = "seed.dat"
   call istart(seed, startfile, ifail)
   if (ifail /= 0) then
      write(STDERR, 100) "reading/setting seed faild"
@@ -60,16 +62,24 @@ program simulate
   ! ==============================================
   ! reading input file
   ! ==============================================
-  status = "old"
-  call askFileName(inputfile, "input file: ", status, estatus)
-  if (status(1:1) .eq. "x") then
+  estatus = "old"
+  i = command_argument_count()
+  if (i == 0) then
+   call askFileName(inputfile, "input file: ", status, estatus)
+   if (status(1:1) .eq. "x") then
      write(STDERR, 101) "error in openning input file ", trim(inputfile)
      stop 2
+   end if
+  elseif (i >= 1) then
+   call get_command_argument(1, inputfile)
   end if
 
   call readInput(inputfile, verbose, nchr, filename1, filename2, nBasePop,&
        chrL, mutationRate, nQTL, nSNP, randomQTL, MAF, baseNameFreq, ncomp, &
-       corrs, nanim, pedigreefile, gMatrixfile, TBVfile, saveQTL, saveSNP)
+       corrs, nanim, pedigreefile, TBVFile, phenFile, saveGRM, gMatrixfile, &
+       saveGenotypeBIN, saveGenotypeTXT, genotypeFileBIN, genotypeFileTXT, &
+       vars, means, cv, h2,xmin, xmax, nlox, nfarm, farmRange, allocation,&
+       saveQTL, saveSNP)
 
   ! ==============================================
   ! allocations
@@ -84,7 +94,10 @@ program simulate
   i = nAnim * (nAnim + 1) / 2 
   call alloc1D(AMat, i, "AMat", "main")
   call alloc1I(chr_nlocibefore, nchr, "chr_nlociBefore", "main")
-
+  i = nanim * nlox
+  call alloc2D(locations, nanim, nlox, "x", "main")
+  call alloc1I(farmInd, i, "farmInd", "simulatePhenotype")
+  call alloc1D(phen, i, "phen", "main")
   ! ==============================================
   ! reading pedigree file
   ! ==============================================
@@ -183,6 +196,13 @@ program simulate
   call SimulateTBV(nAnim, nChr, nComp, indiv, genome1, chr_nlocibefore,&
        QTLlist, TBV, verbose)
   if (verbose) write(STDOUT, 100) "breeding values simulated"
+  ! scale 
+  do i = 1, nComp
+   val1 = sqrt(vars%A(i) / variance(TBV(1:nanim,i), nanim))
+   tbv(1:nanim,i) = tbv(1:nanim,i) * val1
+   val1 = sum(tbv(1:nanim,i)) / nanim
+   tbv(1:nanim,i) = tbv(1:nanim,i) - val1
+  end do
   
   ! saving TBV (one of outputs)
   open(1,file = trim(tbvFile))
@@ -192,35 +212,59 @@ program simulate
      write(1, formato) (tbv(i,j), j = 1, ncomp)
   end do
   close(1)
-
   ! ================================================================
   ! making G matrix
   ! ================================================================
-  iscaled = 1 !(0:no, 1:yes)
-  ivar  = 1 !(0:sample, 1:2pq, 2:2p'q')
-  j = 0 ! imiss (0:mean, 1:ignore)
-  i = 1 ! addDom (1:additive, 2:dominance)
-  call getGmatrix(nanim, nChr, nSNP, indiv, genome1, SNPlist,&
+  if (saveGRM) then
+   iscaled = 1 !(0:no, 1:yes)
+   ivar  = 1 !(0:sample, 1:2pq, 2:2p'q')
+   j = 0 ! imiss (0:mean, 1:ignore)
+   i = 1 ! addDom (1:additive, 2:dominance)
+   call getGmatrix(nanim, nChr, nSNP, indiv, genome1, SNPlist,&
        chr_nlocibefore, iscaled, ivar, j, i, Amat, verbose)
-  !writing AMAT to disk (one of outputs)
-  i = maxval(indiv)
-  k = 1
-  do while (i >= 10)
+   !writing AMAT to disk (one of outputs)
+   i = maxval(indiv)
+   k = 1
+   do while (i >= 10)
      i = i / 10
      k = k + 1
-  end do
-  open(1, FILE = trim(GmatrixFile))
-  i = nanim * ( nanim + 1 ) / 2
-  write(formato,'(a2,i1,a5,i1,a22)')'(i',k,',1x,i',k,',1x,g24.15,i9,g24.15)'
-  write(6,*) " formato= ", trim(formato)
-  k = 0
-  do i = 1, nanim
+   end do
+   open(1, FILE = trim(GmatrixFile))
+   i = nanim * ( nanim + 1 ) / 2
+   write(formato,'(a2,i1,a5,i1,a22)')'(i',k,',1x,i',k,',1x,g24.15,i9,g24.15)'
+   write(6,*) " formato= ", trim(formato)
+   k = 0
+   do i = 1, nanim
      do j = 1, i
         k = k + 1
         write(1, formato) indiv(i), indiv(j), amat(k)
      end do
+   end do
+   close(1)
+  end if
+  ! ================================================================
+  ! writing genotype file
+  ! ================================================================
+  if (saveGenotypeBIN .or. saveGenotypeTXT) then
+   call makeGenotype(nanim, nchr, nsnp, indiv, genome1,&
+   SNPlist, chr_nlocibefore, genotypeFileBIN, genotypeFileTXT,&
+   saveGenotypeBIN, saveGenotypeTXT)
+  end if
+  ! ================================================================
+  ! simulating and writing phenotype
+  ! ================================================================  
+  i = 2 ! ncomp
+  call setUserParameters(xmin, xmax, nfarm, farmRange, allocation)
+  call SimulatePhenotype(verbose, nanim, nComp, tbv, means, vars, nlox,&
+   phen, locations, farmInd, pedigree)
+  open(1, file = trim(phenFile))
+  k = 0
+  do i = 1, nanim
+   do j = 1, nlox
+    k = k + 1
+    write(1, '(i0,1x,i0,1x, g0.14, 1x, g0.15)') i, farmInd(k), locations(i, j) , phen(k)
+   end do
   end do
-  close(1)
 
   ! ================================================================
   ! setting a new seed for next run

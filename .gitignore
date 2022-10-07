@@ -7,3 +7,6 @@ tests/*
 !tests/input
 data/*
 !data/pedigree.txt
+*mod
+*o
+!src/cio/

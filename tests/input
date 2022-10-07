@@ -4,7 +4,7 @@
 
 ! [int] verbosity: '1' = produces lots of information,
 ! else = quiet
-1
+0
 
 !!!!!!!!!!!!!!!!!!!!! genomic information !!!!!!!!!!!!!!!!!!!!!
 !!!! most of the inputs in this part may no not need to be changed
@@ -12,8 +12,9 @@
 26
 
 ! [*] base-name for genepool with integer representation of
-! genes the number of individuals must be greater than number 
-! of animals the format should be <basename><xxx> with xxx
+! genes. The number of individuals in the genepool must be equal 
+! or greater than the founder population in the pedigree file. 
+! The format should be <basename><xxx> with xxx
 ! starting from 001 (limit of 100 characters; 
 ../data/original.ch
 
@@ -33,25 +34,26 @@
 1000
 
 ! [int] randomQTL: 1 = QTLs will be selected randomly,
-! else = QTLs will be selected
-! from the alleses with MAF above a certain threshold
+! else = QTLs will be selected from the alleses with MAF 
+! above a certain threshold
 1
 
 ! [real] MAF for QTL selection. If randomQTL = True,
-! this will be ignored, otherwise
-! MAF must be in interval [0,0.5)
+! this will be ignored, otherwise MAF must be in 
+! interval [0,0.5)
 0.05
 
 ! [*] base-name for frequency files. If randomQTL = True this
-! will be ignored, otherwise
-! as many files are required as there are chromosomes
+! will be ignored, otherwise as many files are required as
+! there are chromosomes
 freq.txt
 
 
 !!!!!!!!!!!!!!!!!!!!! genetic infomration !!!!!!!!!!!!!!!!!!!!!
 !!!! Information for genetic traits are here 
 ! [int] number of components, i.e., number of traits
-6
+! for random regression this is two (slope, intercept)
+2
 
 ! Correlation structure
 ! (ncomp-1)*ncomp/2 x [real] (ncomp = # of components)
@@ -70,44 +72,61 @@ freq.txt
 ! corr(ncomp,2)
 ! ...
 ! corr(ncomp,ncomp-1)
-! NOTE, THAT THE DISTRIBUTION OF TBV IS NOT STANDARDISED
-0.10
-0.5
-0.3
-0.2
-0.0
-0.1
-0.2
-0.3
-0.4
-0.0
-0.0
-0.0
-0.1
-0.2
-0.8
+-0.5
 
 !!!!!!!!!!!!!!!!!!!! population information !!!!!!!!!!!!!!!!!!!
 ! [int] number of animals in pedigree
 ! NOTE THTAT IF THIS NUMBER IS SMALLER THAN THE ACTUAL NUMBER OF LINES IN THE 
 ! PEDIGREE FILE, THE REST OF THE FILE IS SKIPPED.
-800
+6900
 
 ! pedigree file (in the form id, father, mother) (should not have header)
 ../data/pedigree.txt
 
 !!!!!!!!!!!!!!!!!!!!! output information !!!!!!!!!!!!!!!!!!!!!!
-! output filename for G matrix
-gmatrix.txt
-
-! output filename for TBV
+! filename for TBV
 tbv.txt
 
+! filename for phenotypes
+phenotype.txt
+
+! Save Gmatrix file? (1 = yes, default = no)
+! default name: gmatrix.txt
+0
+
+! save genotype file in text form? (1 = yes, default = no)
+! default name: genotype.txt
+1
+
+! save genotype file in binary form? (1 = yes, default = no)
+! default name: genotype.bin
+1
+!!!!!!!!!!!!!!!!!!!!!! phenotype info !!!!!!!!!!!!!!!!!!!!!!!!
+! mean values (ncomp x [real]) (for random regression slope comes first)
+-3.0
+11.0
+! coefficient variations (first for slope) c.v = sigma_P/mu
+! here, I assumed sigma_P = 1 for both components
+0.3333
+0.0909
+! heritabilities (first for slope)
+0.1
+0.1
+! range of x (min, max)
+0.0
+1.0
+! number of records per individual
+3
+! number of farms
+10
+! range of farms from interval (0,1.0)
+0.15
+! allocation scenario (1=random, 2=clustered, 3=assortative)
+1
 !!!!!!!!!!!!!!!!!!!!!! debugging files !!!!!!!!!!!!!!!!!!!!!!!!
 ! I included these files (specially QTL) for debugging puposes
 ! Save QTL in QTLlist.txt file? (1 = yes, default = no)
 ! QTLs are standardised with the same correlation as expected for tbv
-1
+0
 ! Save SNP in SNPlist.txt file? (1 = yes, default = no)
 0
-
