@@ -10,6 +10,7 @@ program simulate
 
   logical :: verbose
   logical :: saveSNP, saveQTL, saveGenotypeBIN, saveGenotypeTXT, saveGRM
+  logical :: saveFullGenome
   integer :: nBasePop
   integer :: nanim, nloci, nblock, maxloci, maxblock, ifail, nChr
   character(len=100) :: startFile, filename1, filename2, inputfile, phenFile
@@ -79,7 +80,7 @@ program simulate
        corrs, nanim, pedigreefile, TBVFile, phenFile, saveGRM, gMatrixfile, &
        saveGenotypeBIN, saveGenotypeTXT, genotypeFileBIN, genotypeFileTXT, &
        vars, means, cv, h2,xmin, xmax, nlox, nfarm, farmRange, allocation,&
-       saveQTL, saveSNP)
+       saveQTL, saveSNP, saveFullGenome)
 
   ! ==============================================
   ! allocations
@@ -187,6 +188,23 @@ program simulate
         end do
      end do
      close(1)
+  end if
+
+  ! saving whole genome for both haplotypes and all markers (if instructed)
+  if (saveFullGenome) then
+    do ichr = 1, nchr
+      write(formato, '(a,i0.3)') "genome.ch", ichr
+        open(1, file = trim(formato))
+        write(1, '(2(i0,1x),i0)') nanim, genome1(ichr)%nloci, genome1(ichr)%nblock
+        write(formato, '(a, i0, a)') "(", genome1(ichr)%nblock-1, "(i0,1x),i0)"
+        do i = 1, nanim
+          write(1, fmt=formato) &
+              (genome1(ichr)%genotypes(i, 1, j), j = 1, genome1(ichr)%nblock)
+          write(1, fmt=formato)&
+              (genome1(ichr)%genotypes(i, 2, j), j = 1, genome1(ichr)%nblock)
+        end do
+        close(1)
+    end do
   end if
   
   ! ================================================================

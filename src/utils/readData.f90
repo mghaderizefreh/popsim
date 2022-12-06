@@ -3,7 +3,7 @@ subroutine readInput(inputfile, verbose, nchr, genepoolfile, geneposfile, &
      corrs, nanim, pedigreefile, tbvFile, phenFile, saveGRM, gMatFile, &
      saveGenotypeBIN, saveGenotypeTXT, genotypefileBIN, genotypefileTXT,&
      varsIn, means, cv, h2, xmin, xmax, nlox, nfarm, farmRange, allocation,&
-     saveQTL, saveSNP)
+     saveQTL, saveSNP, saveFullGenome)
   use constants
   implicit none
   character(len=*), intent(in) :: inputfile ! list of all inputs
@@ -35,6 +35,7 @@ subroutine readInput(inputfile, verbose, nchr, genepoolfile, geneposfile, &
   !!!!!!!!!!!!!!!!!!!! debugging files !!!!!!!!!!!!!!!!!!!!
    logical, intent(out) :: saveQTL
    logical, intent(out) :: saveSNP
+   logical, intent(out) :: saveFullGenome
   !!!!!!!!!!!!!!!!!!!! phenotype info !!!!!!!!!!!!!!!!!!!!
    type(variances), intent(out) :: varsIn
    real(kind=KINDR), dimension(:), allocatable, intent(out) :: means
@@ -391,6 +392,12 @@ subroutine readInput(inputfile, verbose, nchr, genepoolfile, geneposfile, &
     saveSNP = iinput .eq. 1
     write(STDOUT, 33) "saveSNP?", saveSNP
 
+   ! SaveFullGenome
+    call nextInput(iun, line, lno)
+    read(line, *, iostat = stat) iinput
+    call assert(stat.eq.0, "failed to read input for SaveFullGenome", lno)
+    saveFullGenome = iinput .eq. 1
+    write(STDOUT, 33) "saveFullGenome?", saveFullGenome
   !!!!!!!!!!!!!!!!!!!! FINISHED !!!!!!!!!!!!!!!!!!!!
   write(STDOUT, '(a,i4,a)') "all inputs read in", lno, " lines"
   close(iun)
