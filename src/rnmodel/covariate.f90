@@ -12,11 +12,11 @@ subroutine covariate(nComp, nObs, nAnim, nLox, TBV, E, phen, locations, means)
   real(KINDR), dimension(:), allocatable, save :: cte
   integer :: i, j, k
   
-  if (nComp .ne. 2) then
-     write(STDERR, '(a)') "Error"
-     write(STDERR, *) " 'covariate' only works for ncomp = 2 at the moment"
-     stop 3
-  end if
+!  if (nComp .ne. 2) then
+!     write(STDERR, '(a)') "Error"
+!     write(STDERR, *) " 'covariate' only works for ncomp = 2 at the moment"
+!     stop 3
+!  end if
 
   if (.not.allocated(cte)) then
      call alloc1D(cte, nComp, "cte", "covariate")
@@ -28,6 +28,7 @@ subroutine covariate(nComp, nObs, nAnim, nLox, TBV, E, phen, locations, means)
   end if
 
   ! all individuals have phenotype at a few locations
+  if (ncomp .eq. 2) then
   k = 0
   do i = 1, nAnim
      do j = 1, nlox
@@ -36,6 +37,15 @@ subroutine covariate(nComp, nObs, nAnim, nLox, TBV, E, phen, locations, means)
              (TBV(i, 1) + E(k, 1) + cte(1))
      end do
   end do
+  else if (ncomp .eq. 1) then
+  k = 0
+  do i = 1, nAnim
+    do j = 1, nlox
+      k = k + 1
+      phen(k) = TBV(i,1) + E(k,1) + cte(1)
+    end do
+  end do
+  end if
 
 end subroutine covariate
 
