@@ -314,6 +314,8 @@ subroutine readInput(inputfile, verbose, nchr, genepoolfile, geneposfile, &
     end do
     do i = 1, nComp
      do j = 1, i - 1
+      varsin%corr(i,j) = corrs(i,j)
+      varsin%corr(j,i) = corrs(j,i)
       varsin%cov(i,j) = varsin%corr(i,j) * sqrt(varsin%A(i)) * sqrt(varsin%A(j))
       varsin%cov(j,i) = varsin%cov(i,j)
     end do
