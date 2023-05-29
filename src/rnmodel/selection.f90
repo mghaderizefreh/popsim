@@ -88,32 +88,32 @@ program selection
   locations(1:nanim, 1:nlox) = ZERO
   call alloc2D(X, nobs, nfix, "X", "main")
   X(1:nobs, 1:nfix) = ZERO
-  call alloc1I(farmInd, nobs, "farmInd", "main")
+  call alloc1D(farmInd, nobs, "farmInd", "main")
   farmInd(1:nobs) = 0
-  call alloc1I(indiv, nanim, "indiv", "main")
-  call alloc1L(sex, nanim, "sex", "main")
+  call alloc1D(indiv, nanim, "indiv", "main")
+  call alloc1D(sex, nanim, "sex", "main")
   call alloc2D(CTE, nComp, 2, "CTE", "main")
   indiv= (/( i, i = 1, nanim )/)
   ! the array sex corresponds to the new generation (before selection)
   sex(1:nanim) = .false. ! all female
   sex(1:nanim:n_opf) = .true. ! for each female one offspring is male
-  call alloc2I(pedigree, nanim, 3, "pedigree", "main")
+  call alloc2D(pedigree, nanim, 3, "pedigree", "main")
   pedigree(1:nanim, 1:3) = 0
   i = n_m * n_fpm
-  call alloc1I(male, n_m, "male", "main")
-  call alloc1I(female, i, "female", "main")
-  call alloc1I(ids, nobs, "ids", "main")
+  call alloc1D(male, n_m, "male", "main")
+  call alloc1D(female, i, "female", "main")
+  call alloc1D(ids, nobs, "ids", "main")
   call alloc1D(phenotypes, nobs, "phenotypes", "main")
-  allocate(genome1(nChr))
-  allocate(genome2(nChr))
-  call alloc2I(SNPlist, nChr, nSNP, "SNPlist", "main")
-  call alloc2I(QTLlist%indices, nChr, nQTL, "QTLlist%indices", "main")
+  call alloc1D(genome1, nChr, "genome1", nChr)
+  call alloc1D(genome2, nChr, "genome2", nChr)
+  call alloc2D(SNPlist, nChr, nSNP, "SNPlist", "main")
+  call alloc2D(QTLlist%indices, nChr, nQTL, "QTLlist%indices", "main")
   call alloc3D(QTLlist%values, nChr, nQTL, nComp, "QTLlist%values", "main")
   call alloc2D(tbv, nanim, ncomp, "tbv", "main")
   i = nAnim * (nAnim + 1) / 2 
   call alloc1D(AMat, i, "AMat", "main")
   call alloc1D(fixeff, nfix, "fixEff", "main")
-  allocate(ranEff(nRan))
+  call alloc1D(ranEff, nRan, "ranEff", "main")
   call alloc1D(values, nanim, "values", "main")
   maxid = nanim ! maxval(indiv)
   call alloc1D(ranEff(1)%array, maxid, "ranEff(1)%array", "main") ! slope effect (genetic)
@@ -126,8 +126,8 @@ program selection
      write(STDERR, *) " not implemented for nran != 1 or 3"
      stop 2
   end if
-  call alloc1I(chr_nlocibefore, nchr, "chr_nlociBefore", "main")
-  call alloc1I(ipiv, nobs, "ipiv", "main")
+  call alloc1D(chr_nlocibefore, nchr, "chr_nlociBefore", "main")
+  call alloc1D(ipiv, nobs, "ipiv", "main")
   call alloc1D(Py, nobs, "Py", "main")
   nelement = nObs * (nObs + 1) / 2 ! size V matrix, P, etc.
   call alloc1D(p, nelement, "p", "main")

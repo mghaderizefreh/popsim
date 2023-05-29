@@ -62,7 +62,7 @@ subroutine InitialiseGenotypes(verbose, nchr, nanim, genstart, nloci, nblock,&
         genome(ichr)%nloci  = nloci
         genome(ichr)%nblock = nblock
         genome(ichr)%chrL = chrL
-        call alloc3Ip(genome(ichr)%genotypes, nanim, 2, nblock, &
+        call alloc3D(genome(ichr)%genotypes, nanim, 2, nblock, &
              "genome(ichr)%genotypes", "initialiseGenotypes")
      end do
   end if
@@ -159,16 +159,16 @@ subroutine InitialiseGenotypes(verbose, nchr, nanim, genstart, nloci, nblock,&
 
         genome(ichr)%nloci  = nloci
         genome(ichr)%nblock = nblock
-        call alloc3Ip (genome(ichr)%genotypes, nanim, 2, nblock, &
+        call alloc3D(genome(ichr)%genotypes, nanim, 2, nblock, &
              "genome(ichr)%genotypes", "initialiseGenotypes")
 
         nLines = i * 2 ! number of lines
         i = 2 * nFounders
         if (.not.allocated(temp)) then
-           call alloc1I(temp, nLines, "temp", "initialiseGenotypes")
-           call alloc1I(gamIndex, i, "index", "initialiseGenotypes")
-           call alloc1I(binIndex, i, "gamIndex","initialiseGenotypes")
-           call alloc1I(animIndex, i, "gamIndex","initialiseGenotypes")
+           call alloc1D(temp, nLines, "temp", "initialiseGenotypes")
+           call alloc1D(gamIndex, i, "index", "initialiseGenotypes")
+           call alloc1D(binIndex, i, "gamIndex","initialiseGenotypes")
+           call alloc1D(animIndex, i, "gamIndex","initialiseGenotypes")
         end if
 
         temp = (/( id, id = 1, nLines )/)
@@ -203,7 +203,9 @@ subroutine InitialiseGenotypes(verbose, nchr, nanim, genstart, nloci, nblock,&
         end if
         close(iun)
 
-        allocate(genome(iChr)%positions(genome(iChr)%nLoci))
+        write(filename, '(a,i0,a)') "genome(",iChr,")%positions"
+        call alloc1D(genome(iChr)%positions, genome(iChr)%nLoci, &
+          trim(filename), "initialiseGenotypes")
         write(filename, '(a,i3.3)') trim(prefixfilename2), ichr
         open(newunit = iun, file = filename, status = 'old')
         read(iun, *)

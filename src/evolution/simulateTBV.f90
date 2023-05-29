@@ -29,8 +29,8 @@ subroutine SimulateTBV(nAnim, nChr, nComp, indiv, genome, chr_nlocibefore,&
      end do
   end if
 
-  call alloc1I(haplotype1, maxBlock, "haplotype1", "simulateTBV")
-  call alloc1I(haplotype2, maxBlock, "haplotype2", "simulateTBV")
+  call alloc1D(haplotype1, maxBlock, "haplotype1", "simulateTBV")
+  call alloc1D(haplotype2, maxBlock, "haplotype2", "simulateTBV")
   call alloc2D(effect, totLoci, nComp, "effect", "simulateTBV")
   effect(1:totLoci, 1:nComp) = ZERO
 

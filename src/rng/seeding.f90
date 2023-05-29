@@ -12,8 +12,8 @@ subroutine istart(seed, startfile, returnVal)
   character(len=7) :: fmto
   call random_seed(size = n)
   write(fmto, "(a1,i2,a4)") "(", n, "i12)"
-  call alloc1I(initial, n, 'seed', 'istart')
-  call alloc1I(seed, n, 'seed', 'istart')
+  call alloc1D(initial, n, 'seed', 'istart')
+  call alloc1D(seed, n, 'seed', 'istart')
   inquire (file=startfile,exist=iex)
   if (iex) then
      open(newUnit = iun, file=startfile, form='formatted',status='old')

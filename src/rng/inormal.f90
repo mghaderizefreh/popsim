@@ -39,7 +39,7 @@ subroutine inormal(mean, cov, dim, size, output, seed)
      seedi = seed(1)
   else
      call random_seed(size = info)
-     allocate(seed2(info))
+     call alloc1D(seed2, info, "seed2", "inormal")
      call random_seed(get = seed2)
      seedi = seed2(1)
   end if

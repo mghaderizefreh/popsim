@@ -85,24 +85,24 @@ program simulate
   ! ==============================================
   ! allocations
   ! ==============================================
-  call alloc1I(indiv, nanim, "indiv", "main")
+  call alloc1D(indiv, nanim, "indiv", "main")
   indiv= (/( i, i = 1, nanim )/)
-  allocate(genome1(nChr))
-  call alloc2I(SNPlist, nChr, nSNP, "SNPlist", "main")
-  call alloc2I(QTLlist%indices, nChr, nQTL, "QTLlist%indices", "main")
+  call alloc1D(genome1, nChr, "genome1", "main")
+  call alloc2D(SNPlist, nChr, nSNP, "SNPlist", "main")
+  call alloc2D(QTLlist%indices, nChr, nQTL, "QTLlist%indices", "main")
   call alloc3D(QTLlist%values, nChr, nQTL, nComp, "QTLlist%values", "main")
   call alloc2D(tbv, nanim, ncomp, "tbv", "main")
   i = nAnim * (nAnim + 1) / 2 
   call alloc1D(AMat, i, "AMat", "main")
-  call alloc1I(chr_nlocibefore, nchr, "chr_nlociBefore", "main")
+  call alloc1D(chr_nlocibefore, nchr, "chr_nlociBefore", "main")
   i = nanim * nlox
   call alloc2D(locations, nanim, nlox, "x", "main")
-  call alloc1I(farmInd, i, "farmInd", "simulatePhenotype")
+  call alloc1D(farmInd, i, "farmInd", "simulatePhenotype")
   call alloc1D(phen, i, "phen", "main")
   ! ==============================================
   ! reading pedigree file
   ! ==============================================
-  call alloc2I(pedigree, nanim, 3, "pedigree", "main")
+  call alloc2D(pedigree, nanim, 3, "pedigree", "main")
   call readPedigree(pedigreeFile, nanim, pedigree, nfounders)
 
   ! ==============================================

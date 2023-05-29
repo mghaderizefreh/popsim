@@ -4,8 +4,7 @@ subroutine SimulatePhenotype(verbose, nAnim, nComp, TBV, means, &
 ! in simulation: for intercept and slope ncomp = 2. However, nfix depends on the
 ! type of analysis: if a single trait is desired nfix = 1, if random regression
 ! is to be conducted nfix = 2
-  use constants, only: alloc1I, alloc1D, alloc2D, variances, &
-   STDOUT, ZERO, STDERR, ONE
+  use constants, only: alloc1D, alloc2D, variances, STDOUT, ZERO, STDERR, ONE
   use rng_module, only: gnormal
   use user_type
   implicit none
@@ -149,8 +148,8 @@ subroutine allocateInd(nAnim, nlox, nobs, nfarm, allocation, farmBounds,&
         stop 2
      end if
 
-     call alloc1I(temp1, nm, "temp1", "allocateInd")
-     call alloc1I(temp2, nm, "temp2", "allocateInd")
+     call alloc1D(temp1, nm, "temp1", "allocateInd")
+     call alloc1D(temp2, nm, "temp2", "allocateInd")
      do i = 1, spf
         j = (i-1)*nfarm + 1
         k = i * nfarm

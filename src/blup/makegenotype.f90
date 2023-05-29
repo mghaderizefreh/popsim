@@ -51,14 +51,13 @@ subroutine makeGenotype(nanim, nChr, nSNP, ident, genome, SNPlist, &
   end do
   totalSNP = nSNP * nChr
   if (.not.allocated(pruningSNP)) then
-     call alloc1I(pruningSNP, totLoci, "pruningSNP", "GetGmatrix")
+     call alloc1D(pruningSNP, totLoci, "pruningSNP", "GetGmatrix")
      pruningSNP(1:totLoci) = 0
      do iChr = 1, nchr
         pruningSNP(chr_nlociBefore(iChr) + SNPlist(iChr, :)) = 1
      end do
   end if
-  allocate(genotype(nanim,totalSNP))
-!  call alloc2I(genotype, nanim, totalSNP, "genotype", "GetGmatrix")
+  call alloc2D(genotype, nanim,totalSNP, "genotype", "GetGmatrix")
 
   do id = 1, nanim
      k = 0
@@ -102,7 +101,11 @@ subroutine makeGenotype(nanim, nChr, nSNP, ident, genome, SNPlist, &
    col = totalSNP
    linearSize = row * col
    lsM1 = linearSize - 1
-   allocate(linear(0:lsM1))
+   allocate(linear(0:lsM1), stat = i)
+   if (i .ne. 0) then
+     write(STDERR, '(A)') "Error:"
+     write(STDERR, *) "Allocation failed for 'linear'"
+   end if
    do i = 0, (row - 1)
     do j = 0, (col - 1)
       counter = j

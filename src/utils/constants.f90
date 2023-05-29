@@ -51,13 +51,35 @@ module constants
   real(KINDR),    parameter :: SQRTPI = 1.7724538509055159_KINDR
   complex(KINDR), parameter :: I_C    = CMPLX(ZERO,    ONE,  KINDR)
 
-  public :: alloc1L
-  public :: alloc1I, alloc2I, alloc3Ip
+  private :: alloc1D_L, alloc1D_I, alloc1D_D, alloc1D_J, alloc1D_Chr, &
+    alloc1D_D_p
+  private :: alloc2D_I, alloc2D_D, alloc2D_I8
+  private :: alloc3D_I_p, alloc3D_D
   public :: alloc1D, alloc2D, alloc3D
   private :: HandleErr
 
+  interface alloc1D  ! one dimenisonal arrays
+    module procedure alloc1D_L ! logical
+    module procedure alloc1D_I ! integer
+    module procedure alloc1D_D ! real(double)
+    module procedure alloc1D_D_p!real(double) pointer
+    module procedure alloc1D_J ! jagged array
+    module procedure alloc1D_Chr! chromosome
+  end interface alloc1D
+
+  interface alloc2D ! two dimensional (2D) array
+    module procedure alloc2D_I ! integer
+    module procedure alloc2D_I8! integer(kind8)
+    module procedure alloc2D_D ! real(double)
+  end interface alloc2D
+
+  interface alloc3D ! 3D array or pointer
+    module procedure alloc3D_I_p ! integer pointer
+    module procedure alloc3D_D ! real(double)
+  end interface alloc3D
+
 contains
-  subroutine alloc1L(array, len, name, from)
+  subroutine alloc1D_L(array, len, name, from)
     implicit none
     logical, dimension(:), allocatable, intent(inout) :: array
     integer, intent(in) :: len
@@ -70,8 +92,8 @@ contains
        allocate(array(len), stat = i)
        if (i /= 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc1L
-  subroutine alloc1I(array, len, name, from)
+  end subroutine alloc1D_L
+  subroutine alloc1D_I(array, len, name, from)
     implicit none
     integer, dimension(:), allocatable, intent(inout) :: array
     integer, intent(in) :: len
@@ -84,8 +106,9 @@ contains
        allocate(array(len), stat = i)
        if (i /= 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc1I
-  subroutine alloc1D(array, len, name, from)
+  end subroutine alloc1D_I
+
+  subroutine alloc1D_D(array, len, name, from)
     implicit none
     real(KINDR), dimension(:), allocatable, intent(inout) :: array
     integer, intent(in) :: len
@@ -98,9 +121,49 @@ contains
        allocate(array(len), stat = i)
        if (i /= 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc1D
+  end subroutine alloc1D_D
 
-  subroutine alloc2I(array, len1, len2, name, from)
+  subroutine alloc1D_D_p(array, len, name, from)
+    implicit none
+    real(KINDR), dimension(:), pointer, intent(inout) :: array
+    integer, intent(in) :: len
+    character(len=*), intent(in) :: name, from
+    integer :: i
+    allocate(array(len), stat = i)
+       if (i /= 0) call HandleErr(i, name, from)
+  end subroutine alloc1D_D_p
+
+  subroutine alloc1D_J(array, len, name, from)
+    implicit none
+    type(Jarr), dimension(:), allocatable, intent(inout) :: array
+    integer, intent(in) :: len
+    character(len=*), intent(in) :: name, from
+    integer :: i
+    if (allocated(array)) then
+       i = -1
+       call HandleErr(i, name, from)
+    else
+       allocate(array(len), stat = i)
+       if (i /= 0) call HandleErr(i, name, from)
+    end if
+  end subroutine alloc1D_J
+
+  subroutine alloc1D_Chr(array, len, name, from)
+    implicit none
+    type(chromosome), dimension(:), allocatable, intent(inout) :: array
+    integer, intent(in) :: len
+    character(len=*), intent(in) :: name, from
+    integer :: i
+    if (allocated(array)) then
+       i = -1
+       call HandleErr(i, name, from)
+    else
+       allocate(array(len), stat = i)
+       if (i /= 0) call HandleErr(i, name, from)
+    end if
+  end subroutine alloc1D_Chr
+
+  subroutine alloc2D_I(array, len1, len2, name, from)
     implicit none
     integer, dimension(:,:), allocatable, intent(inout) :: array
     integer, intent(in) :: len1, len2
@@ -113,8 +176,25 @@ contains
        allocate(array(len1, len2), stat = i)
        if (i /= 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc2I
-  subroutine alloc2D(array, len1, len2, name, from)
+  end subroutine alloc2D_I
+
+  subroutine alloc2D_I8(array, len1, len2, name, from)
+    use iso_fortran_env, only: int8
+    implicit none
+    integer(kind=int8), dimension(:,:), allocatable, intent(inout) :: array
+    integer, intent(in) :: len1, len2
+    character(len=*), intent(in) :: name, from
+    integer :: i
+    if (allocated(array)) then
+       i = -1
+       call HandleErr(i, name, from)
+    else
+       allocate(array(len1, len2), stat = i)
+       if (i /= 0) call HandleErr(i, name, from)
+    end if
+  end subroutine alloc2D_I8
+
+  subroutine alloc2D_D(array, len1, len2, name, from)
     implicit none
     real(KINDR), dimension(:,:), allocatable, intent(inout) :: array
     integer, intent(in) :: len1, len2
@@ -127,9 +207,9 @@ contains
        allocate(array(len1, len2), stat = i)
        if (i .ne. 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc2D
+  end subroutine alloc2D_D
 
-  subroutine alloc3Ip(array, len1, len2, len3, name, from)
+  subroutine alloc3D_I_p(array, len1, len2, len3, name, from)
     implicit none
     integer, dimension(:,:,:), pointer, intent(inout) :: array
     integer, intent(in) :: len1, len2, len3
@@ -137,8 +217,8 @@ contains
     integer :: i
     allocate(array(len1, len2, len3), stat = i)
     if (i .ne. 0) call HandleErr(i, name, from)
-  end subroutine alloc3Ip
-  subroutine alloc3D(array, len1, len2, len3, name, from)
+  end subroutine alloc3D_I_p
+  subroutine alloc3D_D(array, len1, len2, len3, name, from)
     implicit none
     real(KINDR), dimension(:,:,:), allocatable, intent(inout) :: array
     integer, intent(in) :: len1, len2, len3
@@ -151,7 +231,7 @@ contains
        allocate(array(len1, len2, len3), stat = i)
        if (i /= 0) call HandleErr(i, name, from)
     end if
-  end subroutine alloc3D
+  end subroutine alloc3D_D
   
   subroutine HandleErr(i, name, from)
     implicit none
@@ -184,4 +264,4 @@ contains
      
   
 end module constants
-   
+
