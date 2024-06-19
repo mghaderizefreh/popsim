@@ -2,7 +2,7 @@
 set -e
 shopt -s nullglob
 exe="popsim.exe"
-FC=ifort
+FC=ifx
 CC=icc
 iflags="-mkl -static -qopenmp"
 flags="$iflags"
